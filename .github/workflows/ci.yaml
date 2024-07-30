@@ -1,0 +1,39 @@
+name: Build and Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Scan Docker Image
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: |
+        echo "Building Docker image..."
+        docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Upload Trivy Scan Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: trivy-report
+        path: trivy-report.html
