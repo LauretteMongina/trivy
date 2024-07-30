@@ -40,7 +40,7 @@ jobs:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
           fetch-depth: 0
-          token: ${{ secrets.ORG_REPO_TOKEN }}
+          token: ${{ secrets.MONGINA }}
 
       - name: Setup git settings
         run: |
